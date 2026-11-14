@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
-@Table(schema = "APP", name = "Candidato", uniqueConstraints = @UniqueConstraint(name = "UQ_CANDIDATO_CPF", columnNames = "CPF"), indexes = {@Index(name = "IDX_CANDIDATO_NOME", columnList = "NOME"), @Index(name = "IDX_CANDIDATO_CPF", columnList = "CPF")})
+@Table(schema = "APP", name = "Candidato", uniqueConstraints = {@UniqueConstraint(name = "UQ_CANDIDATO_CPF", columnNames = "CPF"), @UniqueConstraint(name = "UQ_CANDIDATO_EMAIL", columnNames = "EMAIL")}, indexes = {@Index(name = "IDX_CANDIDATO_NOME", columnList = "NOME"), @Index(name = "IDX_CANDIDATO_CPF", columnList = "CPF")})
 public class Candidato {
 
 	@Id
@@ -21,6 +21,9 @@ public class Candidato {
 	// cpf contém 11 dígitos. Formato: XXX.XXX.XXX-XX
 	@Column(name = "CPF", nullable = false, length = 11, updatable = false)
 	private String cpf;
+
+	@Column(name = "EMAIL", nullable = false, length = 50)
+	private String email;
 
 	@Column(name = "NASCIMENTO", nullable = false, updatable = false)
 	private LocalDate nascimento;
@@ -60,6 +63,14 @@ public class Candidato {
 
 	public void setCpf(String cpf) {
 		this.cpf = cpf;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	public LocalDate getNascimento() {
