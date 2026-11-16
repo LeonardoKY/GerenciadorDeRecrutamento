@@ -15,29 +15,32 @@ public class Candidato {
 	@Column(name = "ID", nullable = false, updatable = false)
 	private UUID id;
 
-	@Column(name = "NOME",  nullable = false, length = 50, updatable = false)
+	@Column(name = "NOME",  nullable = false, length = 50)
 	private String nome;
 
 	// cpf contém 11 dígitos. Formato: XXX.XXX.XXX-XX
-	@Column(name = "CPF", nullable = false, length = 11, updatable = false)
+	@Column(name = "CPF", nullable = false, length = 11)
 	private String cpf;
 
 	@Column(name = "EMAIL", nullable = false, length = 50)
 	private String email;
 
-	@Column(name = "NASCIMENTO", nullable = false, updatable = false)
+	@Column(name = "NASCIMENTO", nullable = false)
 	private LocalDate nascimento;
 
 	@Column(name = "EXPERIENCIA")
 	private int anosExperiencia;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "GENERO", nullable = false, updatable = false, length = 20)
+	@Column(name = "GENERO", nullable = false, length = 20)
 	private Genero genero;
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "FORMACAO", nullable = false, length = 20)
 	private NivelFormacao formacao;
+
+	@OneToOne(mappedBy = "candidato", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	private Endereco endereco;
 
 	public Candidato() {}
 
@@ -103,5 +106,24 @@ public class Candidato {
 
 	public void setFormacao(NivelFormacao formacao) {
 		this.formacao = formacao;
+	}
+
+	// Métodos para manter a sincronização do relacionamento na memória.
+
+	public Endereco getEndereco() {
+		return endereco;
+	}
+
+	public void setEndereco(Endereco endereco) {
+		// Desvincula o endereco anterior.
+		if (this.endereco != null) {
+			this.endereco.setCandidato(null);
+		}
+		// Atualiza o endereco do candidato.
+		this.endereco = endereco;
+		// Define o candidato como proprietário do novo endereco.
+		if (endereco != null) {
+			endereco.setCandidato(this);
+		}
 	}
 }

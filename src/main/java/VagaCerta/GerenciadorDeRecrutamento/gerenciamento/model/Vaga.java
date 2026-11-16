@@ -3,7 +3,6 @@ package VagaCerta.GerenciadorDeRecrutamento.gerenciamento.model;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.UUID;
 
 @Entity
@@ -15,13 +14,13 @@ public class Vaga {
 	@Column(name = "ID", nullable = false, updatable = false)
 	private UUID id;
 
-	@Column(name = "DATA_ABERTURA", nullable = false, updatable = false)
+	@Column(name = "DATA_ABERTURA", nullable = false)
 	private LocalDateTime abertura;
 
-	@Column(name = "DATA_FECHAMENTO", nullable = false, updatable = false)
+	@Column(name = "DATA_FECHAMENTO")
 	private LocalDateTime fechamento;
 
-	@Column(name = "SALARIO_MENSAL", nullable = false, updatable = false)
+	@Column(name = "SALARIO_MENSAL", nullable = false)
 	private double salarioMensal;
 
 	@Enumerated(EnumType.STRING)
@@ -29,11 +28,11 @@ public class Vaga {
 	private Modalidade modalidade;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "SENIORIDADE", nullable = false, updatable = false, length = 20)
+	@Column(name = "SENIORIDADE", nullable = false, length = 20)
 	private Senioridade senioridade;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "AREA", nullable = false, updatable = false, length = 20)
+	@Column(name = "AREA", nullable = false, length = 20)
 	private AreaAtuacao area;
 
 	@Enumerated(EnumType.STRING)

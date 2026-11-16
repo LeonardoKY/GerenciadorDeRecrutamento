@@ -14,28 +14,28 @@ public class Processo {
 	@Column(name = "ID", nullable = false, updatable = false)
 	private UUID id;
 
-	@Column(name = "PRETENCAO_SALARIAL",nullable = false, updatable = true)
+	@Column(name = "PRETENCAO_SALARIAL",nullable = false)
 	private double pretensaoSalarial;
 
 	// Data que foi realizada a inscrição do processo
-	@Column(name = "INSCRICAO", nullable = false, updatable = false)
+	@Column(name = "INSCRICAO", nullable = false)
 	private LocalDateTime inscricao;
 
 	// Data de encerramento do processo
-	@Column(name = "ENCERRAMENTO",  nullable = true, updatable = true)
+	@Column(name = "ENCERRAMENTO")
 	private LocalDateTime encerramento;
-	// sem data de encerramento: o processo não foi finalizado e não uma data de término prevista
+	// Data de encerramento nula: o processo não foi finalizado e não há uma data de término prevista
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "STATUS",  nullable = false, updatable = true)
+	@Column(name = "STATUS",  nullable = false)
 	private StatusProcesso status;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "CANDIDATO_ID", nullable = false, updatable = false)
+	@JoinColumn(name = "CANDIDATO_ID", nullable = false)
 	private Candidato candidato;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "VAGA_ID",  nullable = false, updatable = false)
+	@JoinColumn(name = "VAGA_ID",  nullable = false)
 	private Vaga vaga;
 
 	public Processo() {}
