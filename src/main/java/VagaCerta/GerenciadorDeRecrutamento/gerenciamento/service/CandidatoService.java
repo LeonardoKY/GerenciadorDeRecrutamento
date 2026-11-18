@@ -15,6 +15,7 @@ public class CandidatoService {
         this.candidatoRepository = candidatoRepository;
     }
 
+    // método para realizar a busca com filtros (usamos o Specification).
     public List<Candidato> buscar(
             String nome,
             String cpf,
