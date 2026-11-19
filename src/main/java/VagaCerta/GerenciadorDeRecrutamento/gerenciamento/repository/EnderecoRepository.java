@@ -9,13 +9,17 @@ import java.util.UUID;
 
 public interface EnderecoRepository extends JpaRepository<Endereco, UUID> {
 
-    // Busca precisa por CPF (do candidato)
-    Optional<Endereco> findByCandidatoCpf(String cpf);
-    // Busca precisa por CNPJ (da empresa)
-    Optional<Endereco> findByEmpresaCnpj(String cnpj);
-
     // Busca por CEP
     List<Endereco> findByCep(String cep);
-    // Busca pelo nome da empresa
-    List<Endereco> findByCandidatoNomeContainingIgnoreCase(String nome);
+
+    // Busca o endereço de um candidato.
+    Optional<Endereco> findByCandidatoId(UUID candidatoId);
+    // Busca precisa por CPF (do candidato)
+    Optional<Endereco> findByCandidatoCpf(String cpf);
+
+    // Lista os endereços de uma empresa.
+    List<Endereco> findAllByEmpresaId(UUID empresaId);
+    // Busca por CNPJ da empresa
+    List<Endereco> findAllByEmpresaCnpj(String cnpj);
+
 }
