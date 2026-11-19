@@ -8,8 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -29,40 +28,6 @@ public class ProcessoService {
         this.candidatoRepository = candidatoRepository;
         this.vagaRepository = vagaRepository;
     }
-
-    /* Transições permitidas entre os estados:
-    Como o status do processo deve progredir de forma linear,
-    usaremos o Map para definir os estados liberados em cada etapa.
-    Ex: TRIAGEM libera os estados AVALIACAO, REPROVADO e DESISTIU
-
-    Obs.: CONTRATADO, REPROVADO e DESISTIU são estados finais.
-     */
-    private static final Map<StatusProcesso, Set<StatusProcesso>>
-            TRANSICOES = Map.of(
-
-            StatusProcesso.INSCRITO,
-            Set.of(StatusProcesso.TRIAGEM,
-                    StatusProcesso.DESISTIU),
-
-            StatusProcesso.TRIAGEM,
-            Set.of(StatusProcesso.AVALIACAO,
-                    StatusProcesso.REPROVADO,
-                    StatusProcesso.DESISTIU),
-
-            StatusProcesso.AVALIACAO,
-            Set.of(StatusProcesso.ENTREVISTA,
-                    StatusProcesso.REPROVADO,
-                    StatusProcesso.DESISTIU),
-
-            StatusProcesso.ENTREVISTA,
-            Set.of(StatusProcesso.APROVADO,
-                    StatusProcesso.REPROVADO,
-                    StatusProcesso.DESISTIU),
-
-            StatusProcesso.APROVADO,
-            Set.of(StatusProcesso.CONTRATADO,
-                    StatusProcesso.DESISTIU)
-    );
 
     // Realiza a inscrição de um candidato em uma vaga.
     @Transactional
@@ -104,9 +69,10 @@ public class ProcessoService {
         processo.setVaga(vaga);
         processo.setPretensaoSalarial(pretensaoSalarial);
 
-        // Define os valores iniciais.
+        // Define a data de inscrição.
         processo.setInscricao(LocalDateTime.now());
-        processo.setStatus(StatusProcesso.INSCRITO);
+
+        // O status inicial INSCRITO é definido pela entidade (Processo).
 
         return processoRepository.save(processo);
     }
@@ -123,34 +89,14 @@ public class ProcessoService {
                         new IllegalArgumentException(
                                 "Processo não encontrado."));
 
-        StatusProcesso statusAtual = processo.getStatus();
-
-        // Verifica se a transição é permitida.
-        Set<StatusProcesso> permitidos =
-                TRANSICOES.getOrDefault(statusAtual, Set.of());
-
-        if (!permitidos.contains(novoStatus)) {
-            throw new IllegalStateException(
-                    "Transição de " + statusAtual +
-                            " para " + novoStatus + " não permitida.");
-        }
-
-        // Atualiza o estado.
-        processo.setStatus(novoStatus);
-
-        // Registra a data de encerramento.
-        if (novoStatus == StatusProcesso.CONTRATADO ||
-                novoStatus == StatusProcesso.REPROVADO ||
-                novoStatus == StatusProcesso.DESISTIU) {
-
-            processo.setEncerramento(LocalDateTime.now());
-        }
+        // Solicita à entidade a validação e atualização do status.
+        processo.atualizarStatus(novoStatus);
 
         return processoRepository.save(processo);
     }
 
     // Busca um processo pelo identificador.
-    public java.util.Optional<Processo> buscarPorId(UUID id) {
+    public Optional<Processo> buscarPorId(UUID id) {
         return processoRepository.findById(id);
     }
 

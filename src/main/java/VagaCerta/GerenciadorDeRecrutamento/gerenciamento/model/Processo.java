@@ -3,6 +3,8 @@ package VagaCerta.GerenciadorDeRecrutamento.gerenciamento.model;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 /*
@@ -77,14 +79,6 @@ public class Processo {
 		this.encerramento = encerramento;
 	}
 
-	public StatusProcesso getStatus() {
-		return status;
-	}
-
-	public void setStatus(StatusProcesso status) {
-		this.status = status;
-	}
-
 	public Candidato getCandidato() {
 		return candidato;
 	}
@@ -99,5 +93,70 @@ public class Processo {
 
 	public void setVaga(Vaga vaga) {
 		this.vaga = vaga;
+	}
+
+	public StatusProcesso getStatus() {
+		return status;
+	}
+
+	// Private: impede que outros componentes alterem o status sem passar pelo serviço.
+	private void setStatus(StatusProcesso status) {
+		this.status = status;
+	}
+
+	/* Método para transição de estado (regra de negócio).
+	Transições permitidas entre os estados:
+    Como o status do processo deve progredir de forma sequencial e linear,
+    usaremos o Map para definir os estados liberados em cada etapa.
+    Ex: TRIAGEM libera os estados AVALIACAO, REPROVADO e DESISTIU
+
+    Obs.: CONTRATADO, REPROVADO e DESISTIU são estados finais.
+     */
+	public void atualizarStatus(StatusProcesso novoStatus) {
+
+		Map<StatusProcesso, Set<StatusProcesso>> transicoes = Map.of(
+
+				StatusProcesso.INSCRITO,
+				Set.of(StatusProcesso.TRIAGEM,
+						StatusProcesso.DESISTIU),
+
+				StatusProcesso.TRIAGEM,
+				Set.of(StatusProcesso.AVALIACAO,
+						StatusProcesso.REPROVADO,
+						StatusProcesso.DESISTIU),
+
+				StatusProcesso.AVALIACAO,
+				Set.of(StatusProcesso.ENTREVISTA,
+						StatusProcesso.REPROVADO,
+						StatusProcesso.DESISTIU),
+
+				StatusProcesso.ENTREVISTA,
+				Set.of(StatusProcesso.APROVADO,
+						StatusProcesso.REPROVADO,
+						StatusProcesso.DESISTIU),
+
+				StatusProcesso.APROVADO,
+				Set.of(StatusProcesso.CONTRATADO,
+						StatusProcesso.DESISTIU)
+		);
+
+		Set<StatusProcesso> permitidos =
+				transicoes.getOrDefault(status, Set.of());
+
+		if (!permitidos.contains(novoStatus)) {
+			throw new IllegalStateException(
+					"Transição de " + status + " para " +
+							novoStatus + " não permitida."
+			);
+		}
+
+		setStatus(novoStatus);
+
+		if (novoStatus == StatusProcesso.CONTRATADO ||
+				novoStatus == StatusProcesso.REPROVADO ||
+				novoStatus == StatusProcesso.DESISTIU) {
+
+			this.encerramento = LocalDateTime.now();
+		}
 	}
 }
