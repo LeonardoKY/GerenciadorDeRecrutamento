@@ -11,8 +11,10 @@ public interface CandidatoRepository extends JpaRepository<Candidato, UUID>, Jpa
     // Para verificar se existe cadastro por cpf.
     boolean existsByCpf(String cpf);
 }
-
 /*
-O JpaSpecificationExecutor permite executar consultas dinâmicas utilizando Specifications.
-O Specifications permite combinação de múltiplos filtros e busca com atributos de outras entidades.
+O JpaSpecificationExecutor permite executar consultas dinâmicas utilizando Specifications,
+o qual permite combinação de múltiplos filtros e busca com atributos de outras entidades.
+
+Usaremos o Specifications para Candidato para que o usuário consiga fazer buscas com
+vários filtros ou usando-os de forma opcional (não precisa aplicar todos os filtros).
  */

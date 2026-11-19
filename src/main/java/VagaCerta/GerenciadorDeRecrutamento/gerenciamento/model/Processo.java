@@ -5,8 +5,13 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+/*
+O candidato não pode se inscrever para a mesma vaga duas vezes, ou seja,
+a combinação entre CANDIDATO_ID e VAGA_ID devem ser únicas.
+A configuração @UniqueConstraint do banco de dados não permite duplicação.
+ */
 @Entity
-@Table(schema = "APP" ,name = "Processo", indexes = {@Index(name = "IDX_PROCESSO_CANDIDATO", columnList = "CANDIDATO_ID"), @Index(name = "IDX_PROCESSO_VAGA", columnList = "VAGA_ID")})
+@Table(schema = "APP" ,name = "Processo", uniqueConstraints = @UniqueConstraint(name = "UQ_PROCESSO_CANDIDATO_VAGA", columnNames = {"CANDIDATO_ID", "VAGA_ID"}), indexes = {@Index(name = "IDX_PROCESSO_CANDIDATO", columnList = "CANDIDATO_ID"), @Index(name = "IDX_PROCESSO_VAGA", columnList = "VAGA_ID")})
 public class Processo {
 
 	@Id
@@ -28,7 +33,7 @@ public class Processo {
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "STATUS",  nullable = false)
-	private StatusProcesso status;
+	private StatusProcesso status = StatusProcesso.INSCRITO; // o status do processo inicia em INSCRITO.
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "CANDIDATO_ID", nullable = false)
