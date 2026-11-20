@@ -40,7 +40,7 @@ public class Vaga {
 	private StatusVaga status;
 
 	// Feedback: avaliação do cliente. Valor de 0 a 10
-	@Column(name = "FEEDBACK", precision = 3,scale = 1)
+	@Column(name = "FEEDBACK")
 	private float feedback;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
