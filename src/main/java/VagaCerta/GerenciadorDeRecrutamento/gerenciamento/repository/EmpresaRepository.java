@@ -12,9 +12,12 @@ public interface EmpresaRepository extends JpaRepository<Empresa, UUID> {
 
     // Para verificar se existe cadastro (verifica por cnpj).
     boolean existsByCnpj(String cnpj);
+    // Para validações específicas.
+    boolean existsByCnpjAndIdNot(String cnpj, UUID id);
+
     // Busca precisa por cnpj.
     Optional<Empresa> findByCnpj(String cnpj);
 
     List<Empresa> findByNomeIgnoreCaseContaining(String nome);
-    List<Empresa> findByPorteEmpresa(PorteEmpresa porte);
+    List<Empresa> findByPorte(PorteEmpresa porte);
 }

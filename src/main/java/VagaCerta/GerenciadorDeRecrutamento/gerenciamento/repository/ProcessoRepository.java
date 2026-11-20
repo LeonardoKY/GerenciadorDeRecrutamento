@@ -10,6 +10,11 @@ public interface ProcessoRepository extends JpaRepository<Processo, UUID> {
 
     // Verifica se o candidato já está inscrito na vaga.
     boolean existsByCandidatoIdAndVagaId(UUID candidatoId, UUID vagaId);
+    // Verifica se o candidato possui processos registrados.
+    boolean existsByCandidatoId(UUID candidatoId);
+    // Verifica se existe algum processo associado à vaga.
+    boolean existsByVagaId(UUID vagaId);
+
     // Busca todos os processos de um candidato pelo ID do candidato.
     List<Processo> findByCandidatoId(UUID candidatoId);
     // Busca todos os processos de uma vaga pelo ID da vaga.

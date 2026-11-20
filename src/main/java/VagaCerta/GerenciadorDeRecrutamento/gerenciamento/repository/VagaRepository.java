@@ -7,5 +7,8 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import java.util.UUID;
 
-public interface VagaRepository extends JpaRepository<Vaga, UUID>, JpaSpecificationExecutor<Vaga> {
+public interface VagaRepository extends JpaRepository<Vaga, UUID>,
+        JpaSpecificationExecutor<Vaga> {
+    // Verifica se existem vagas vinculadas à empresa.
+    boolean existsByEmpresaId(UUID empresaId);
 }

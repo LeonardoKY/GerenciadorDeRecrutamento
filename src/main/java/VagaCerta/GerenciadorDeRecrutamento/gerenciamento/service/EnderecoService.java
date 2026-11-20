@@ -20,17 +20,17 @@ import java.util.UUID;
 public class EnderecoService {
 
     private final EnderecoRepository enderecoRepository;
-    private final CandidatoRepository candidatoRepository;
     private final EmpresaRepository empresaRepository;
+    private final CandidatoRepository candidatoRepository;
 
     public EnderecoService(
             EnderecoRepository enderecoRepository,
-            CandidatoRepository candidatoRepository,
-            EmpresaRepository empresaRepository) {
+            EmpresaRepository empresaRepository,
+            CandidatoRepository candidatoRepository) {
 
         this.enderecoRepository = enderecoRepository;
-        this.candidatoRepository = candidatoRepository;
         this.empresaRepository = empresaRepository;
+        this.candidatoRepository = candidatoRepository;
     }
 
     // Busca um endereço pelo ID.
@@ -38,105 +38,174 @@ public class EnderecoService {
         return enderecoRepository.findById(id);
     }
 
+    // Lista os endereços de uma empresa.
+    public List<Endereco> listarPorEmpresa(UUID empresaId) {
+
+        if (!empresaRepository.existsById(empresaId)) {
+            throw new IllegalArgumentException(
+                    "Empresa não encontrada.");
+        }
+
+        return enderecoRepository.findByEmpresaId(empresaId);
+    }
+
     // Busca o endereço de um candidato.
     public Optional<Endereco> buscarPorCandidato(UUID candidatoId) {
+
+        if (!candidatoRepository.existsById(candidatoId)) {
+            throw new IllegalArgumentException(
+                    "Candidato não encontrado.");
+        }
+
         return enderecoRepository.findByCandidatoId(candidatoId);
     }
 
-    // Lista os endereços de uma empresa.
-    public List<Endereco> buscarPorEmpresa(UUID empresaId) {
-        return enderecoRepository.findAllByEmpresaId(empresaId);
-    }
-
-    // Cadastra o endereço de um candidato.
+    // Cadastra um endereço para uma empresa.
     @Transactional
-    public Endereco cadastrarParaCandidato(
-            UUID candidatoId,
-            Endereco endereco) {
+    public Endereco salvarParaEmpresa(UUID empresaId, Endereco endereco) {
 
-        Candidato candidato = candidatoRepository.findById(candidatoId)
-                .orElseThrow(() ->
-                        new IllegalArgumentException(
-                                "Candidato não encontrado."));
-
-        // Impede que o candidato possua dois endereços.
-        if (candidato.getEndereco() != null) {
-            throw new IllegalStateException(
-                    "O candidato já possui um endereço cadastrado.");
-        }
-
-        // Define o proprietário e sincroniza o relacionamento.
-        candidato.setEndereco(endereco);
-
-        return enderecoRepository.save(endereco);
-    }
-
-    // Adiciona um endereço a uma empresa.
-    @Transactional
-    public Endereco adicionarParaEmpresa(
-            UUID empresaId,
-            Endereco endereco) {
+        validarNovoEndereco(endereco);
 
         Empresa empresa = empresaRepository.findById(empresaId)
                 .orElseThrow(() ->
                         new IllegalArgumentException(
                                 "Empresa não encontrada."));
 
-        // Define o proprietário e sincroniza o relacionamento.
-        empresa.adicionarEndereco(endereco);
+        endereco.setEmpresa(empresa);
+        endereco.setCandidato(null);
+
+        endereco.setCep(normalizarCep(endereco.getCep()));
 
         return enderecoRepository.save(endereco);
     }
 
-    /* Atualiza os dados de um endereço.
-
-    O proprietário não pode ser alterado, podemos modificar apenas os atributos do endereço.
-     */
-
+    // Cadastra o endereço de um candidato.
     @Transactional
-    public Endereco atualizar(UUID enderecoId, Endereco dados) {
+    public Endereco salvarParaCandidato(UUID candidatoId, Endereco endereco) {
 
-        Endereco endereco = enderecoRepository.findById(enderecoId)
+        validarNovoEndereco(endereco);
+
+        Candidato candidato = candidatoRepository.findById(candidatoId)
+                .orElseThrow(() ->
+                        new IllegalArgumentException(
+                                "Candidato não encontrado."));
+
+        if (enderecoRepository.existsByCandidatoId(candidatoId)) {
+            throw new IllegalStateException(
+                    "O candidato já possui um endereço cadastrado.");
+        }
+
+        endereco.setCandidato(candidato);
+        endereco.setEmpresa(null);
+
+        endereco.setCep(normalizarCep(endereco.getCep()));
+
+        return enderecoRepository.save(endereco);
+    }
+
+    // Atualiza os dados de um endereço, preservando seu proprietário.
+    @Transactional
+    public Endereco atualizar(UUID id, Endereco dados) {
+
+        Endereco endereco = enderecoRepository.findById(id)
                 .orElseThrow(() ->
                         new IllegalArgumentException(
                                 "Endereço não encontrado."));
 
-        // Atualiza somente os dados do endereço.
-        endereco.setCep(dados.getCep());
+        validarDados(dados);
+
+        endereco.setCep(normalizarCep(dados.getCep()));
         endereco.setNumero(dados.getNumero());
-        endereco.setComplemento(dados.getComplemento());
-        endereco.setLogradouro(dados.getLogradouro());
-        endereco.setBairro(dados.getBairro());
-        endereco.setCidade(dados.getCidade());
-        endereco.setEstado(dados.getEstado());
+        endereco.setComplemento(dados.getComplemento().trim());
+        endereco.setLogradouro(dados.getLogradouro().trim());
+        endereco.setBairro(dados.getBairro().trim());
+        endereco.setCidade(dados.getCidade().trim());
+        endereco.setEstado(dados.getEstado().trim());
 
-        // O proprietário original é preservado.
         return enderecoRepository.save(endereco);
     }
 
-    // Exclui um endereço.
+    // Exclui um endereço pelo ID.
     @Transactional
-    public void excluir(UUID enderecoId) {
+    public void excluir(UUID id) {
 
-        Endereco endereco = enderecoRepository.findById(enderecoId)
+        Endereco endereco = enderecoRepository.findById(id)
                 .orElseThrow(() ->
                         new IllegalArgumentException(
                                 "Endereço não encontrado."));
 
-        // Remove o endereço do candidato.
-        if (endereco.getCandidato() != null) {
-            endereco.getCandidato().setEndereco(null);
+        enderecoRepository.delete(endereco);
+    }
+
+    // Valida um novo endereço.
+    private void validarNovoEndereco(Endereco endereco) {
+
+        if (endereco == null) {
+            throw new IllegalArgumentException(
+                    "Os dados do endereço não foram informados.");
         }
 
-        // Remove o endereço da empresa.
-        if (endereco.getEmpresa() != null) {
-            endereco.getEmpresa().removerEndereco(endereco);
+        if (endereco.getId() != null) {
+            throw new IllegalArgumentException(
+                    "Um novo endereço não deve possuir ID informado.");
         }
 
-        /*
-         Não precisamos chamar delete() diretamente.
-         O orphanRemoval = true das entidades proprietárias,
-         realiza a exclusão do endereço no banco de dados.
-         */
+        validarDados(endereco);
+    }
+
+    // Valida os campos do endereço.
+    private void validarDados(Endereco endereco) {
+
+        if (endereco == null) {
+            throw new IllegalArgumentException(
+                    "Os dados do endereço não foram informados.");
+        }
+
+        String cep = normalizarCep(endereco.getCep());
+
+        if (!cep.matches("\\d{8}")) {
+            throw new IllegalArgumentException(
+                    "O CEP deve possuir 8 dígitos.");
+        }
+
+        if (endereco.getNumero() < 0) {
+            throw new IllegalArgumentException(
+                    "O número do endereço não pode ser negativo.");
+        }
+
+        validarTexto(endereco.getComplemento(), "Complemento", 50, true);
+        validarTexto(endereco.getLogradouro(), "Logradouro", 50, false);
+        validarTexto(endereco.getBairro(), "Bairro", 50, false);
+        validarTexto(endereco.getCidade(), "Cidade", 50, false);
+        validarTexto(endereco.getEstado(), "Estado", 50, false);
+    }
+
+    // Valida campos de texto e seus limites.
+    private void validarTexto(
+            String valor,
+            String campo,
+            int tamanhoMaximo,
+            boolean permitirVazio) {
+
+        if (valor == null || (!permitirVazio && valor.isBlank())) {
+            throw new IllegalArgumentException(
+                    campo + " é obrigatório.");
+        }
+
+        if (valor.length() > tamanhoMaximo) {
+            throw new IllegalArgumentException(
+                    campo + " deve possuir no máximo " +
+                            tamanhoMaximo + " caracteres.");
+        }
+    }
+
+    // Remove caracteres não numéricos do CEP.
+    private String normalizarCep(String cep) {
+
+        if (cep == null) {
+            return "";
+        }
+
+        return cep.replaceAll("\\D", "");
     }
 }

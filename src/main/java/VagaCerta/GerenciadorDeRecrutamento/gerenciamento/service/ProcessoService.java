@@ -36,6 +36,13 @@ public class ProcessoService {
             UUID vagaId,
             double pretensaoSalarial) {
 
+        if (candidatoId == null || vagaId == null) {
+            throw new IllegalArgumentException(
+                    "O candidato e a vaga devem ser informados.");
+        }
+
+        validarPretensaoSalarial(pretensaoSalarial);
+
         // Verifica se o candidato existe.
         Candidato candidato = candidatoRepository.findById(candidatoId)
                 .orElseThrow(() ->
@@ -68,20 +75,23 @@ public class ProcessoService {
         processo.setCandidato(candidato);
         processo.setVaga(vaga);
         processo.setPretensaoSalarial(pretensaoSalarial);
-
-        // Define a data de inscrição.
         processo.setInscricao(LocalDateTime.now());
 
-        // O status inicial INSCRITO é definido pela entidade (Processo).
+        // O status inicial INSCRITO é definido pela entidade Processo.
 
         return processoRepository.save(processo);
     }
 
-    // Atualiza o estado de um processo.
+    // Atualiza o status de um processo.
     @Transactional
     public Processo atualizarStatus(
             UUID processoId,
             StatusProcesso novoStatus) {
+
+        if (novoStatus == null) {
+            throw new IllegalArgumentException(
+                    "O novo status deve ser informado.");
+        }
 
         // Recupera o processo.
         Processo processo = processoRepository.findById(processoId)
@@ -89,7 +99,7 @@ public class ProcessoService {
                         new IllegalArgumentException(
                                 "Processo não encontrado."));
 
-        // Solicita à entidade a validação e atualização do status.
+        // A entidade valida e executa a transição de status.
         processo.atualizarStatus(novoStatus);
 
         return processoRepository.save(processo);
@@ -102,16 +112,39 @@ public class ProcessoService {
 
     // Lista os processos de um candidato.
     public List<Processo> buscarPorCandidato(UUID candidatoId) {
+
+        if (!candidatoRepository.existsById(candidatoId)) {
+            throw new IllegalArgumentException(
+                    "Candidato não encontrado.");
+        }
+
         return processoRepository.findByCandidatoId(candidatoId);
     }
 
     // Lista os processos de uma vaga.
     public List<Processo> buscarPorVaga(UUID vagaId) {
+
+        if (!vagaRepository.existsById(vagaId)) {
+            throw new IllegalArgumentException(
+                    "Vaga não encontrada.");
+        }
+
         return processoRepository.findByVagaId(vagaId);
     }
 
     // Lista todos os processos.
     public List<Processo> listarTodos() {
         return processoRepository.findAll();
+    }
+
+    // Valida a pretensão salarial informada na inscrição.
+    private void validarPretensaoSalarial(double pretensaoSalarial) {
+
+        if (!Double.isFinite(pretensaoSalarial) ||
+                pretensaoSalarial <= 0) {
+
+            throw new IllegalArgumentException(
+                    "A pretensão salarial deve ser um valor positivo e válido.");
+        }
     }
 }
