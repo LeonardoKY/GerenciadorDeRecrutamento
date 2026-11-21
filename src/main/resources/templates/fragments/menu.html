@@ -1,0 +1,100 @@
+<!--Responsável pelas rotas de navegação dos módulos-->
+<!DOCTYPE html>
+<html lang="pt-BR"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<body>
+
+<ul th:fragment="menu(paginaAtiva)"
+    class="navbar-nav me-auto ms-lg-4">
+
+  <!-- Início -->
+  <li class="nav-item">
+
+    <a class="nav-link"
+       th:href="@{/home}"
+       th:classappend="${paginaAtiva == 'home'} ? 'active' : ''"
+       th:aria-current="${paginaAtiva == 'home'} ? 'page' : null">
+
+      Início
+
+    </a>
+
+  </li>
+
+  <!-- Candidatos -->
+  <li class="nav-item">
+
+    <a class="nav-link"
+       th:href="@{/candidatos}"
+       th:classappend="${paginaAtiva == 'candidatos'} ? 'active' : ''"
+       th:aria-current="${paginaAtiva == 'candidatos'} ? 'page' : null">
+
+      Candidatos
+
+    </a>
+
+  </li>
+
+  <!-- Empresas -->
+  <li class="nav-item">
+
+    <a class="nav-link"
+       th:href="@{/empresas}"
+       th:classappend="${paginaAtiva == 'empresas'} ? 'active' : ''"
+       th:aria-current="${paginaAtiva == 'empresas'} ? 'page' : null">
+
+      Empresas
+
+    </a>
+
+  </li>
+
+  <!-- Vagas -->
+  <li class="nav-item">
+
+    <a class="nav-link"
+       th:href="@{/vagas}"
+       th:classappend="${paginaAtiva == 'vagas'} ? 'active' : ''"
+       th:aria-current="${paginaAtiva == 'vagas'} ? 'page' : null">
+
+      Vagas
+
+    </a>
+
+  </li>
+
+  <!-- Processos -->
+  <li class="nav-item">
+
+    <a class="nav-link"
+       th:href="@{/processos}"
+       th:classappend="${paginaAtiva == 'processos'} ? 'active' : ''"
+       th:aria-current="${paginaAtiva == 'processos'} ? 'page' : null">
+
+      Processos
+
+    </a>
+
+  </li>
+
+  <!-- Usuários: exclusivo ADMIN -->
+  <li class="nav-item"
+      sec:authorize="hasRole('ADMIN')">
+
+    <a class="nav-link"
+       th:href="@{/usuarios}"
+       th:classappend="${paginaAtiva == 'usuarios'} ? 'active' : ''"
+       th:aria-current="${paginaAtiva == 'usuarios'} ? 'page' : null">
+
+      Usuários
+
+    </a>
+
+  </li>
+
+</ul>
+
+</body>
+</html>

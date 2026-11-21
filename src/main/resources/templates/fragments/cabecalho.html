@@ -1,0 +1,97 @@
+<!--Responsável pela barra superior da aplicação. -->
+<!--Ele exibirá a marca VagaCerta, o usuário autenticado,
+o perfil e o botão de logout. -->
+<!DOCTYPE html>
+<html lang="pt-BR"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<body>
+
+<nav th:fragment="cabecalho(paginaAtiva)"
+     class="navbar navbar-expand-lg bg-white border-bottom shadow-sm">
+
+  <div class="container">
+
+    <!-- Identificação do sistema -->
+    <a class="navbar-brand fw-bold text-primary fs-4"
+       th:href="@{/home}">
+
+      VagaCerta
+
+    </a>
+
+    <!-- Botão responsivo -->
+    <button class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#menuPrincipal"
+            aria-controls="menuPrincipal"
+            aria-expanded="false"
+            aria-label="Abrir menu">
+
+      <span class="navbar-toggler-icon"></span>
+
+    </button>
+
+    <!-- Conteúdo da navegação -->
+    <div class="collapse navbar-collapse"
+         id="menuPrincipal">
+
+      <!-- Menu de navegação -->
+      <div class="flex-grow-1">
+
+        <div th:replace="~{fragments/menu :: menu(paginaAtiva)}">
+        </div>
+
+      </div>
+
+      <!-- Informações do usuário -->
+      <div class="d-flex align-items-center gap-3
+                        mt-3 mt-lg-0">
+
+        <div class="text-end">
+
+          <div class="fw-semibold"
+               sec:authentication="name">
+          </div>
+
+          <small class="text-secondary"
+                 sec:authorize="hasRole('ADMIN')">
+
+            Administrador
+
+          </small>
+
+          <small class="text-secondary"
+                 sec:authorize="hasRole('RECRUTADOR')">
+
+            Recrutador
+
+          </small>
+
+        </div>
+
+        <!-- Logout -->
+        <form th:action="@{/logout}"
+              method="post">
+
+          <button type="submit"
+                  class="btn btn-outline-danger btn-sm">
+
+            Sair
+
+          </button>
+
+        </form>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</nav>
+
+</body>
+</html>

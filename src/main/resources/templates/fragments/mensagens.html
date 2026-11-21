@@ -1,0 +1,49 @@
+<!--Centraliza as mensagens que os controllers já enviam utilizando
+RedirectAttributes-->
+<!DOCTYPE html>
+<html lang="pt-BR"
+      xmlns:th="http://www.thymeleaf.org">
+
+<body>
+
+<div th:fragment="mensagens"
+     class="mt-4">
+
+  <!-- Mensagem de sucesso -->
+  <div th:if="${sucesso}"
+       class="alert alert-success alert-dismissible fade show"
+       role="alert">
+
+        <span th:text="${sucesso}">
+            Operação realizada com sucesso.
+        </span>
+
+    <button type="button"
+            class="btn-close"
+            data-bs-dismiss="alert"
+            aria-label="Fechar">
+    </button>
+
+  </div>
+
+  <!-- Mensagem de erro -->
+  <div th:if="${erro}"
+       class="alert alert-danger alert-dismissible fade show"
+       role="alert">
+
+        <span th:text="${erro}">
+            Ocorreu um erro durante a operação.
+        </span>
+
+    <button type="button"
+            class="btn-close"
+            data-bs-dismiss="alert"
+            aria-label="Fechar">
+    </button>
+
+  </div>
+
+</div>
+
+</body>
+</html>

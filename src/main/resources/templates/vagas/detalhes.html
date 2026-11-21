@@ -1,0 +1,179 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Detalhes da vaga</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+
+<div th:replace="~{fragments/cabecalho :: cabecalho('vagas')}"></div>
+
+<main class="container mt-4 mb-5">
+
+  <!-- Cabeçalho -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+
+    <h2>Detalhes da vaga</h2>
+
+    <a th:href="@{/vagas}"
+       class="btn btn-outline-secondary">
+      Voltar
+    </a>
+
+  </div>
+
+  <div th:replace="~{fragments/mensagens :: mensagens}"></div>
+
+  <!-- Informações da vaga -->
+  <div class="card mb-4">
+
+    <div class="card-header d-flex justify-content-between align-items-center">
+
+      <h5 class="mb-0">Informações da vaga</h5>
+
+      <a th:href="@{/vagas/{id}/editar(id=${vaga.id})}"
+         class="btn btn-sm btn-warning">
+        Editar vaga
+      </a>
+
+    </div>
+
+    <div class="card-body">
+
+      <div class="row">
+
+        <!-- Empresa -->
+        <div class="col-md-6 mb-3">
+          <strong>Empresa:</strong>
+
+          <p th:text="${vaga.empresa.nome}">
+            Nome da empresa
+          </p>
+        </div>
+
+        <!-- Salário -->
+        <div class="col-md-6 mb-3">
+          <strong>Salário mensal:</strong>
+
+          <p th:text="${#numbers.formatCurrency(vaga.salarioMensal)}">
+            R$ 0,00
+          </p>
+        </div>
+
+        <!-- Área -->
+        <div class="col-md-4 mb-3">
+          <strong>Área de atuação:</strong>
+
+          <p th:text="${vaga.area}">
+            Área
+          </p>
+        </div>
+
+        <!-- Modalidade -->
+        <div class="col-md-4 mb-3">
+          <strong>Modalidade:</strong>
+
+          <p th:text="${vaga.modalidade}">
+            Modalidade
+          </p>
+        </div>
+
+        <!-- Senioridade -->
+        <div class="col-md-4 mb-3">
+          <strong>Senioridade:</strong>
+
+          <p th:text="${vaga.senioridade}">
+            Senioridade
+          </p>
+        </div>
+
+        <!-- Abertura -->
+        <div class="col-md-6 mb-3">
+          <strong>Data de abertura:</strong>
+
+          <p th:text="${vaga.abertura != null ?
+                        #temporals.format(vaga.abertura, 'dd/MM/yyyy HH:mm') : '-'}">
+            Data de abertura
+          </p>
+        </div>
+
+        <!-- Fechamento -->
+        <div class="col-md-6 mb-3">
+          <strong>Data de fechamento:</strong>
+
+          <p th:text="${vaga.fechamento != null ?
+                        #temporals.format(vaga.fechamento, 'dd/MM/yyyy HH:mm') : 'Não definida'}">
+            Data de fechamento
+          </p>
+        </div>
+
+        <!-- Status -->
+        <div class="col-md-6 mb-3">
+          <strong>Status:</strong>
+
+          <p>
+                        <span class="badge bg-success"
+                              th:if="${vaga.status.name() == 'ABERTA'}"
+                              th:text="${vaga.status}">
+                            ABERTA
+                        </span>
+
+            <span class="badge bg-secondary"
+                  th:if="${vaga.status.name() == 'FECHADA'}"
+                  th:text="${vaga.status}">
+                            FECHADA
+                        </span>
+
+            <span class="badge bg-danger"
+                  th:if="${vaga.status.name() == 'CANCELADA'}"
+                  th:text="${vaga.status}">
+                            CANCELADA
+                        </span>
+          </p>
+        </div>
+
+        <!-- Feedback -->
+        <div class="col-md-6 mb-3">
+          <strong>Feedback:</strong>
+
+          <p th:text="${#numbers.formatDecimal(vaga.feedback, 1, 1) + ' / 10'}">
+            0,0 / 10
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Exclusão -->
+  <div class="d-flex justify-content-end">
+
+    <form th:action="@{/vagas/{id}/excluir(id=${vaga.id})}"
+          method="post"
+          onsubmit="return confirm('Deseja realmente excluir esta vaga?');">
+
+      <button type="submit"
+              class="btn btn-danger">
+        Excluir vaga
+      </button>
+
+    </form>
+
+  </div>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
