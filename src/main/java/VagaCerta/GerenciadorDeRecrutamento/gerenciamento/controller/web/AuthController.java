@@ -27,7 +27,7 @@ public class AuthController {
         if (logout != null) {
             model.addAttribute(
                     "mensagem",
-                    "Você saiu do sistema com sucesso."
+                    "Você saiu do sistema."
             );
         }
 
