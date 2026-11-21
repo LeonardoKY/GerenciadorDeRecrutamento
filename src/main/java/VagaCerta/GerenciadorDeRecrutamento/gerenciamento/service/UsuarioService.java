@@ -64,10 +64,7 @@ public class UsuarioService {
 
         usuario.setNome(nome.trim());
         usuario.setEmail(emailNormalizado);
-
-        // A senha original nunca é armazenada.
         usuario.setSenha(passwordEncoder.encode(senha));
-
         usuario.setPerfil(perfil);
         usuario.setAtivo(true);
 
@@ -113,6 +110,16 @@ public class UsuarioService {
 
             throw new IllegalArgumentException(
                     "Já existe outro usuário cadastrado com esse e-mail.");
+        }
+
+        // Impede rebaixar (alterar para recrutador) o último administrador ativo.
+        if (usuario.isAtivo()
+                && usuario.getPerfil() == Perfil.ADMIN
+                && perfil != Perfil.ADMIN
+                && !existeOutroAdminAtivo(id)) {
+
+            throw new IllegalStateException(
+                    "Não é possível alterar o perfil do último administrador ativo.");
         }
 
         usuario.setNome(nome.trim());
@@ -206,3 +213,8 @@ public class UsuarioService {
         return email.trim().toLowerCase(Locale.ROOT);
     }
 }
+
+/* Obs.:
+Administradores já desativados não contam como responsáveis pela administração do sistema,
+considera apenas os ADMIN ativos.
+ */
