@@ -1,0 +1,176 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title th:text="${usuarioId == null ? 'Cadastrar usuário' : 'Editar usuário'}">
+    Cadastro de usuário
+  </title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+
+<div th:replace="~{fragments/cabecalho :: cabecalho('usuarios')}"></div>
+
+<main class="container mt-4 mb-5">
+
+  <!-- Cabeçalho -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+
+    <h2 th:text="${usuarioId == null ? 'Cadastrar usuário' : 'Editar usuário'}">
+      Cadastro de usuário
+    </h2>
+
+    <a th:href="@{/usuarios}"
+       class="btn btn-outline-secondary">
+      Voltar
+    </a>
+
+  </div>
+
+  <div th:replace="~{fragments/mensagens :: mensagens}"></div>
+
+  <!-- Formulário -->
+  <form th:action="@{${usuarioId == null ?
+                    '/usuarios' :
+                    '/usuarios/' + usuarioId}}"
+        method="post"
+        th:object="${usuario}">
+
+    <div class="card">
+
+      <div class="card-header">
+        <h5 class="mb-0">Dados do usuário</h5>
+      </div>
+
+      <div class="card-body">
+
+        <div class="row">
+
+          <!-- Nome -->
+          <div class="col-md-6 mb-3">
+
+            <label for="nome" class="form-label">
+              Nome
+            </label>
+
+            <input type="text"
+                   id="nome"
+                   th:field="*{nome}"
+                   class="form-control"
+                   maxlength="100"
+                   autocomplete="name"
+                   required>
+
+          </div>
+
+          <!-- E-mail -->
+          <div class="col-md-6 mb-3">
+
+            <label for="email" class="form-label">
+              E-mail
+            </label>
+
+            <input type="email"
+                   id="email"
+                   th:field="*{email}"
+                   class="form-control"
+                   maxlength="100"
+                   autocomplete="email"
+                   required>
+
+          </div>
+
+          <!-- Senha -->
+          <div class="col-md-6 mb-3">
+
+            <label for="senha" class="form-label">
+              Senha
+            </label>
+
+            <input type="password"
+                   id="senha"
+                   th:field="*{senha}"
+                   class="form-control"
+                   minlength="8"
+                   autocomplete="new-password"
+                   th:required="${usuarioId == null}">
+
+            <div class="form-text"
+                 th:if="${usuarioId == null}">
+              A senha deve possuir pelo menos 8 caracteres.
+            </div>
+
+            <div class="form-text"
+                 th:unless="${usuarioId == null}">
+              Deixe em branco para manter a senha atual.
+            </div>
+
+          </div>
+
+          <!-- Perfil -->
+          <div class="col-md-6 mb-3">
+
+            <label for="perfil" class="form-label">
+              Perfil de acesso
+            </label>
+
+            <select id="perfil"
+                    th:field="*{perfil}"
+                    class="form-select"
+                    required>
+
+              <option value="">
+                Selecione um perfil
+              </option>
+
+              <option th:each="perfil : ${perfis}"
+                      th:value="${perfil}"
+                      th:text="${perfil}">
+              </option>
+
+            </select>
+
+            <div class="form-text">
+              ADMIN gerencia usuários. RECRUTADOR acessa
+              as funcionalidades de recrutamento.
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Botões -->
+    <div class="d-flex justify-content-end gap-2 mt-4">
+
+      <a th:href="@{/usuarios}"
+         class="btn btn-outline-secondary">
+        Cancelar
+      </a>
+
+      <button type="submit"
+              class="btn btn-primary"
+              th:text="${usuarioId == null ? 'Cadastrar usuário' : 'Salvar alterações'}">
+        Salvar
+      </button>
+
+    </div>
+
+  </form>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="pt-BR"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>VagaCerta | Página Inicial</title>
+
+  <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+
+<!-- ================================================= -->
+<!-- CABEÇALHO -->
+<!-- ================================================= -->
+
+<nav class="navbar navbar-expand-lg border-bottom shadow-sm">
+
+  <div class="container">
+
+    <a class="navbar-brand brand" th:href="@{/home}">
+      VagaCerta
+    </a>
+
+    <button class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#menuPrincipal"
+            aria-controls="menuPrincipal"
+            aria-expanded="false"
+            aria-label="Abrir menu">
+
+      <span class="navbar-toggler-icon"></span>
+
+    </button>
+
+    <div class="collapse navbar-collapse"
+         id="menuPrincipal">
+
+      <ul class="navbar-nav me-auto ms-lg-4">
+
+        <li class="nav-item">
+          <a class="nav-link active"
+             th:href="@{/home}">
+            Início
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link"
+             th:href="@{/candidatos}">
+            Candidatos
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link"
+             th:href="@{/empresas}">
+            Empresas
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link"
+             th:href="@{/vagas}">
+            Vagas
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link"
+             th:href="@{/processos}">
+            Processos
+          </a>
+        </li>
+
+        <li class="nav-item"
+            sec:authorize="hasRole('ADMIN')">
+
+          <a class="nav-link"
+             th:href="@{/usuarios}">
+            Usuários
+          </a>
+
+        </li>
+
+      </ul>
+
+      <!-- Informações do usuário -->
+      <div class="d-flex align-items-center gap-3 mt-3 mt-lg-0">
+
+        <div class="text-end">
+
+          <div class="fw-semibold"
+               sec:authentication="name">
+          </div>
+
+          <small class="text-secondary"
+                 sec:authorize="hasRole('ADMIN')">
+            Administrador
+          </small>
+
+          <small class="text-secondary"
+                 sec:authorize="hasRole('RECRUTADOR')">
+            Recrutador
+          </small>
+
+        </div>
+
+        <!-- Logout -->
+        <form th:action="@{/logout}"
+              method="post">
+
+          <button type="submit"
+                  class="btn btn-outline-danger btn-sm">
+            Sair
+          </button>
+
+        </form>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</nav>
+
+
+<!-- ================================================= -->
+<!-- CONTEÚDO PRINCIPAL -->
+<!-- ================================================= -->
+
+<main class="container">
+
+  <!-- Mensagens do sistema -->
+  <div class="mt-4">
+
+    <div th:if="${sucesso}"
+         class="alert alert-success alert-dismissible fade show"
+         role="alert">
+
+      <span th:text="${sucesso}"></span>
+
+      <button type="button"
+              class="btn-close"
+              data-bs-dismiss="alert"
+              aria-label="Fechar">
+      </button>
+
+    </div>
+
+    <div th:if="${erro}"
+         class="alert alert-danger alert-dismissible fade show"
+         role="alert">
+
+      <span th:text="${erro}"></span>
+
+      <button type="button"
+              class="btn-close"
+              data-bs-dismiss="alert"
+              aria-label="Fechar">
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- Boas-vindas -->
+  <section class="welcome-section">
+
+    <h1 class="h3 fw-bold">
+      Bem-vindo ao VagaCerta!
+    </h1>
+
+    <p class="text-secondary mb-0">
+      Gerencie candidatos, empresas, vagas e processos seletivos
+      em um único lugar.
+    </p>
+
+  </section>
+
+
+  <!-- Módulos do sistema -->
+  <section class="mb-5">
+
+    <h2 class="h5 section-title">
+      Gerenciamento
+    </h2>
+
+    <div class="row g-4">
+
+      <!-- Candidatos -->
+      <div class="col-12 col-md-6 col-lg-3">
+
+        <a th:href="@{/candidatos}"
+           class="module-link">
+
+          <div class="module-card p-4">
+
+            <div class="module-icon mb-3">
+              <i class="bi bi-people"></i>
+            </div>
+
+            <h3 class="h5 fw-semibold">
+              Candidatos
+            </h3>
+
+            <p class="text-secondary small mb-3">
+              Cadastre, consulte e gerencie os candidatos.
+            </p>
+
+            <span class="text-primary fw-semibold small">
+                            Acessar candidatos →
+                        </span>
+
+          </div>
+
+        </a>
+
+      </div>
+
+
+      <!-- Empresas -->
+      <div class="col-12 col-md-6 col-lg-3">
+
+        <a th:href="@{/empresas}"
+           class="module-link">
+
+          <div class="module-card p-4">
+
+            <div class="module-icon mb-3">
+              <i class="bi bi-building"></i>
+            </div>
+
+            <h3 class="h5 fw-semibold">
+              Empresas
+            </h3>
+
+            <p class="text-secondary small mb-3">
+              Gerencie as empresas e seus endereços.
+            </p>
+
+            <span class="text-primary fw-semibold small">
+                            Acessar empresas →
+                        </span>
+
+          </div>
+
+        </a>
+
+      </div>
+
+
+      <!-- Vagas -->
+      <div class="col-12 col-md-6 col-lg-3">
+
+        <a th:href="@{/vagas}"
+           class="module-link">
+
+          <div class="module-card p-4">
+
+            <div class="module-icon mb-3">
+              <i class="bi bi-briefcase"></i>
+            </div>
+
+            <h3 class="h5 fw-semibold">
+              Vagas
+            </h3>
+
+            <p class="text-secondary small mb-3">
+              Cadastre e acompanhe as oportunidades disponíveis.
+            </p>
+
+            <span class="text-primary fw-semibold small">
+                            Acessar vagas →
+                        </span>
+
+          </div>
+
+        </a>
+
+      </div>
+
+
+      <!-- Processos -->
+      <div class="col-12 col-md-6 col-lg-3">
+
+        <a th:href="@{/processos}"
+           class="module-link">
+
+          <div class="module-card p-4">
+
+            <div class="module-icon mb-3">
+              <i class="bi bi-diagram-3"></i>
+            </div>
+
+            <h3 class="h5 fw-semibold">
+              Processos
+            </h3>
+
+            <p class="text-secondary small mb-3">
+              Acompanhe inscrições e etapas de seleção.
+            </p>
+
+            <span class="text-primary fw-semibold small">
+                            Acessar processos →
+                        </span>
+
+          </div>
+
+        </a>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- Área administrativa -->
+  <section class="mb-5"
+           sec:authorize="hasRole('ADMIN')">
+
+    <h2 class="h5 section-title">
+      Administração
+    </h2>
+
+    <div class="card border-0 shadow-sm">
+
+      <div class="card-body p-4">
+
+        <div class="d-flex flex-column flex-md-row
+                            justify-content-between align-items-md-center gap-3">
+
+          <div>
+
+            <h3 class="h5 fw-semibold">
+              Gerenciamento de usuários
+            </h3>
+
+            <p class="text-secondary mb-0">
+              Cadastre, edite, consulte e gerencie
+              as contas de acesso ao sistema.
+            </p>
+
+          </div>
+
+          <a th:href="@{/usuarios}"
+             class="btn btn-primary">
+
+            Gerenciar usuários
+
+          </a>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- Informações gerais -->
+  <section class="mb-5">
+
+    <div class="card border-0 shadow-sm">
+
+      <div class="card-body p-4">
+
+        <h2 class="h5 fw-semibold">
+          Sobre o VagaCerta
+        </h2>
+
+        <p class="text-secondary mb-0">
+          O VagaCerta é um sistema interno de gerenciamento
+          de recrutamento, desenvolvido para centralizar
+          informações de candidatos, empresas, oportunidades
+          e processos seletivos.
+        </p>
+
+      </div>
+
+    </div>
+
+  </section>
+
+</main>
+
+
+<!-- ================================================= -->
+<!-- RODAPÉ -->
+<!-- ================================================= -->
+
+<footer class="border-top bg-white py-3">
+
+  <div class="container text-center">
+
+    <small>
+      VagaCerta - Sistema de Gerenciamento de Recrutamento
+    </small>
+
+  </div>
+
+</footer>
+
+
+<script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+</script>
+
+<!-- Ícones Bootstrap -->
+<link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+</body>
+</html>
